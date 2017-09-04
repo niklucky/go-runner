@@ -50,6 +50,14 @@ type IRunner interface {
 }
 
 /*
+IStarter interface that implements composite Interface for running services
+*/
+type IStarter interface {
+	Exit() error
+	Start()
+}
+
+/*
 INamer - Namer interface
 */
 type INamer interface {
@@ -100,7 +108,7 @@ func (runner *Runner) Name(service interface{}) string {
 /*
 Add — adding service to map
 */
-func (runner *Runner) Add(service IRunner) {
+func (runner *Runner) Add(service interface{}) {
 	runner.Log("Adding service " + color.HiMagentaString(runner.Name(service)))
 	runner.Services = append(runner.Services, service)
 }
@@ -128,6 +136,9 @@ func (runner *Runner) Run() {
 		runner.Log("Service " + color.HiYellowString(runner.Name(v)) + " launching...")
 		if s, ok := v.(IRunner); ok {
 			go s.Run()
+		}
+		if s, ok := v.(IStarter); ok {
+			go s.Start()
 		}
 		runner.Log("Service " + color.HiGreenString(runner.Name(v)) + " launched")
 	}
