@@ -163,6 +163,9 @@ func (runner *Runner) Exit() {
 		if s, ok := v.(IRunner); ok {
 			s.Exit()
 		}
+		if s, ok := v.(IStarter); ok {
+			s.Exit()
+		}
 	}
 }
 
