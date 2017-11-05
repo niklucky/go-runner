@@ -14,7 +14,7 @@ import (
 var v string
 
 func init() {
-	v = "0.6.1"
+	v = "0.7.2"
 }
 
 /*
@@ -121,8 +121,8 @@ func (runner *Runner) InitServices() {
 	for _, v := range runner.Services {
 		if s, ok := v.(Initiator); ok {
 			s.Init()
+			runner.Log("Service " + color.CyanString(runner.Name(v)) + " initialized")
 		}
-		runner.Log("Service " + color.CyanString(runner.Name(v)) + " initialized")
 	}
 }
 
@@ -133,14 +133,16 @@ func (runner *Runner) Run() {
 	runner.InitServices()
 	runner.Log("Starting to run services")
 	for _, v := range runner.Services {
-		runner.Log("Service " + color.HiYellowString(runner.Name(v)) + " launching...")
 		if s, ok := v.(IRunner); ok {
+			runner.Log("Service " + color.HiYellowString(runner.Name(v)) + " calling Run()")
 			go s.Run()
+			runner.Log("Service " + color.HiGreenString(runner.Name(v)) + " launched")
 		}
 		if s, ok := v.(IStarter); ok {
+			runner.Log("Service " + color.HiYellowString(runner.Name(v)) + " calling Start()")
 			go s.Start()
+			runner.Log("Service " + color.HiGreenString(runner.Name(v)) + " launched")
 		}
-		runner.Log("Service " + color.HiGreenString(runner.Name(v)) + " launched")
 	}
 	fmt.Println(".........................................................")
 	interrupt := make(chan os.Signal, 1)
